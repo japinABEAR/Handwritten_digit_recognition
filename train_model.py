@@ -1,8 +1,10 @@
-# train_model.py
 import tensorflow as tf
 from tensorflow.keras import layers, models, callbacks, optimizers
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import numpy as np
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 # Load data
 (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
@@ -18,7 +20,19 @@ datagen.fit(x_train)
 
 # Build model
 model = models.Sequential()
-# ... (rest of the model architecture)
+model.add(layers.Reshape(target_shape=(28, 28, 1), input_shape=(28, 28)))
+model.add(layers.Conv2D(32, kernel_size=3, activation='relu'))
+model.add(layers.BatchNormalization())
+model.add(layers.Conv2D(128, kernel_size=3, activation='relu'))
+model.add(layers.BatchNormalization())
+model.add(layers.Conv2D(128, kernel_size=3, activation='relu'))
+
+model.add(layers.Conv2D(64, kernel_size=5, activation='relu'))
+model.add(layers.MaxPooling2D(pool_size=(2, 2)))
+model.add(layers.Conv2D(64, kernel_size=3, activation='relu'))
+model.add(layers.BatchNormalization())
+model.add(layers.GlobalAveragePooling2D())
+
 model.add(layers.Dense(64, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(0.01)))  # Added L2 regularization
 model.add(layers.Dropout(0.4))
 model.add(layers.Dense(10, activation='softmax'))
